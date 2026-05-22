@@ -90,6 +90,28 @@ SVG donut/pie/scatter:
 9. Preserve ALL data and meaning from the original
 10. Every <section class="slide"> must have an <h1> as its first child (centered, semi-bold — handled by CSS)
 
+## CRITICAL: Visual Quality Rules
+These are hard constraints. Violating them produces broken slides.
+
+### Overflow prevention
+- The slide is exactly 960x540. Content MUST fit — nothing can be clipped at the bottom or right edge.
+- Budget: h1 takes ~50px. Slide padding takes ~88px (top 40 + bottom 48). That leaves ~402px of usable height for content.
+- Before choosing a layout, count the items. A 3-row card grid needs ~390px. A 4-row grid needs ~500px and WILL overflow — split to two slides instead.
+- If a slide has more than 4 cards, 6 list items, 5 bar-chart rows, or a table with 6+ rows, SPLIT it across multiple slides.
+- When in doubt, use fewer items per slide. Two clean slides beat one cramped slide.
+
+### Spacing and proportions
+- Decorative elements (circles, dots, icons, timeline markers) must be small — max 16px diameter. Large decorative elements crowd text.
+- Always leave at least 12px between any decorative element and its label text.
+- In timeline/roadmap layouts, use small dots (8-10px) with labels well below or beside them. Never let a dot touch or overlap text.
+- Card padding minimum: 12px. Grid gap minimum: 12px. Column gap minimum: 24px.
+
+### Layout safety
+- Two-column layouts: each column gets max 420px width. Content must fit within.
+- Cards with text: keep to 2-3 lines max per card. Truncate or split if longer.
+- SVG/chart slides: leave 60px bottom margin for axis labels. Leave 50px left margin for Y-axis labels.
+- Footer elements (.slide-footer) are position:absolute — they do NOT push content up. Account for their 30px height in your content budget.
+
 ## Example Slide Patterns
 
 Title slide:
