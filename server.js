@@ -93,12 +93,14 @@ SVG donut/pie/scatter:
 ## CRITICAL: Visual Quality Rules
 These are hard constraints. Violating them produces broken slides.
 
-### Overflow prevention
-- The slide is exactly 960x540. Content MUST fit — nothing can be clipped at the bottom or right edge.
-- Budget: h1 takes ~50px. Slide padding takes ~88px (top 40 + bottom 48). That leaves ~402px of usable height for content.
-- Before choosing a layout, count the items. A 3-row card grid needs ~390px. A 4-row grid needs ~500px and WILL overflow — split to two slides instead.
-- If a slide has more than 4 cards, 6 list items, 5 bar-chart rows, or a table with 6+ rows, SPLIT it across multiple slides.
-- When in doubt, use fewer items per slide. Two clean slides beat one cramped slide.
+### Overflow prevention — MOST IMPORTANT RULE
+- The slide is exactly 960x540. Content clipped at the bottom is a CRITICAL BUG.
+- Budget: h1 = 50px, padding = 88px. Usable content height = **400px MAX**.
+- A callout = ~70px. A card with 3 lines = ~100px. A 2x2 card grid = ~220px. A callout + 2x2 grid = ~290px. That's the MAX for one slide.
+- NEVER combine a callout with more than 2 cards. NEVER put 4 cards with multi-line text on one slide.
+- If content has 4+ insights/points, use TWO slides (e.g., "Insights (1/2)" and "Insights (2/2)").
+- Hard limits per slide: 3 cards max, 5 bullet points max, 4 table rows max, 4 bar-chart rows max.
+- When in doubt, ALWAYS split to more slides. Ten clean slides are better than five cramped ones.
 
 ### Spacing and proportions
 - Decorative elements (circles, dots, icons, timeline markers) must be small — max 16px diameter. Large decorative elements crowd text.
@@ -155,6 +157,20 @@ Full-bleed chart (no padding):
   <svg viewBox="0 0 960 540" ...><!-- chart content --></svg>
 </section>`;
 
+const AUTOFIT_SCRIPT = `
+document.querySelectorAll('.slide').forEach(s => {
+  s.classList.add('visible');
+  const body = s.querySelector('.slide-body');
+  if (!body) return;
+  const maxH = s.clientHeight - body.offsetTop - 48;
+  if (body.scrollHeight > maxH + 2) {
+    const scale = maxH / body.scrollHeight;
+    body.style.transform = 'scale(' + scale + ')';
+    body.style.transformOrigin = 'top left';
+    body.style.width = (100 / scale) + '%';
+  }
+});`;
+
 function wrapSlideHtml(slideHtml, cssContent, preview) {
   if (preview) {
     return `<!DOCTYPE html>
@@ -172,7 +188,7 @@ html { overflow: hidden; }
 <body>
 ${slideHtml}
 <script>
-document.querySelectorAll('.slide').forEach(s => s.classList.add('visible'));
+${AUTOFIT_SCRIPT}
 <\/script>
 </body>
 </html>`;
@@ -211,6 +227,7 @@ class SlidePresentation {
   }
 }
 new SlidePresentation();
+${AUTOFIT_SCRIPT}
 <\/script>
 </body>
 </html>`;

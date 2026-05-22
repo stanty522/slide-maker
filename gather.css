@@ -139,6 +139,7 @@ html, body {
   justify-content: flex-start;
   gap: 16px;
   overflow: hidden;
+  min-height: 0;
 }
 
 .slide-body.centered {
