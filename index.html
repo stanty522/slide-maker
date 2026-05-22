@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Slide Maker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <h1>Slide Maker</h1>
+    </header>
+    <main class="app-main">
+      <aside class="input-panel">
+        <div class="field">
+          <label for="html-input">HTML Input</label>
+          <textarea id="html-input" placeholder="Paste your HTML here..."></textarea>
+          <div class="upload-row">
+            <button class="btn secondary" id="upload-btn">Upload HTML file</button>
+            <input type="file" id="file-input" accept=".html,.htm" hidden />
+          </div>
+        </div>
+        <div class="field">
+          <label for="ds-select">Design System</label>
+          <select id="ds-select"></select>
+        </div>
+        <button class="btn primary" id="convert-btn">Convert to Slides</button>
+        <div class="action-row">
+          <button class="btn secondary" id="download-btn" disabled>Download HTML</button>
+          <button class="btn secondary" id="pdf-btn" disabled>Export PDF</button>
+        </div>
+        <div class="settings-divider"></div>
+        <div class="field">
+          <label for="api-key">Claude API Key</label>
+          <input type="password" id="api-key" placeholder="sk-ant-..." autocomplete="off" />
+          <p class="field-hint">Stored locally in your browser</p>
+        </div>
+      </aside>
+      <section class="preview-panel">
+        <div class="preview-bar">
+          <span id="slide-counter">No slides yet</span>
+          <div class="preview-nav">
+            <button class="nav-btn" id="prev-btn" disabled>&larr;</button>
+            <button class="nav-btn" id="next-btn" disabled>&rarr;</button>
+          </div>
+        </div>
+        <div class="preview-container" id="preview-container">
+          <div class="empty-state" id="empty-state">
+            <p>Paste HTML and click <strong>Convert to Slides</strong></p>
+          </div>
+          <iframe id="preview-frame" sandbox="allow-same-origin allow-scripts"></iframe>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

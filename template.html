@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gather Design System — Reference</title>
+  <link rel="stylesheet" href="gather.css" />
+</head>
+<body>
+
+  <!-- SLIDE 1: Title -->
+  <section class="slide title-slide">
+    <h1>Gather Design System</h1>
+    <p class="subtitle">A unified slide framework</p>
+    <p class="author">960 &times; 540 &middot; Work Sans &middot; PDF-ready</p>
+  </section>
+
+  <!-- SLIDE 2: Typography & Emphasis -->
+  <section class="slide">
+    <h1>Typography &amp; Emphasis</h1>
+    <div class="slide-body">
+      <p>Default body text is 18px Work Sans in <strong>black</strong>.</p>
+      <p>Use <span class="bold">bold</span> for mild emphasis.</p>
+      <p>Use <span class="accent">accent color</span> for stronger emphasis.</p>
+      <p>Combine both: <span class="accent-bold">bold + accent</span> for maximum emphasis.</p>
+      <div class="divider"></div>
+      <p class="subtitle">Subtitles render at lower opacity for hierarchy.</p>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <span class="tag">Tag</span>
+        <span class="tag filled">Filled Tag</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 3: Layouts — Two Column -->
+  <section class="slide">
+    <h1>Two-Column Layout</h1>
+    <div class="slide-body">
+      <div class="slide-columns">
+        <div class="col">
+          <h3>Left Column</h3>
+          <p>Columns split the slide body evenly with a 32px gap.</p>
+          <p>Use them for side-by-side comparisons, text + image, or before/after.</p>
+        </div>
+        <div class="col">
+          <h3>Right Column</h3>
+          <ul>
+            <li>Bullet markers inherit the accent color</li>
+            <li>Lists work naturally inside columns</li>
+            <li>Keep content balanced between sides</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 4: Cards -->
+  <section class="slide">
+    <h1>Card Components</h1>
+    <div class="slide-body">
+      <div class="slide-grid cols-3">
+        <div class="card accent-border">
+          <h3>Feature One</h3>
+          <p>Cards with an accent border draw attention to key points.</p>
+        </div>
+        <div class="card accent-border">
+          <h3>Feature Two</h3>
+          <p>White background on cream creates subtle depth.</p>
+        </div>
+        <div class="card accent-border">
+          <h3>Feature Three</h3>
+          <p>Keep card content brief — two to three lines max.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 5: Stats / KPIs -->
+  <section class="slide">
+    <h1>Key Metrics</h1>
+    <div class="slide-body">
+      <div class="slide-grid cols-4">
+        <div class="stat-card">
+          <div class="stat-value">12.4K</div>
+          <div class="stat-label">Active Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">94%</div>
+          <div class="stat-label">Retention Rate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">$2.1M</div>
+          <div class="stat-label">Revenue</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">3.2s</div>
+          <div class="stat-label">Avg Load Time</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 6: Table -->
+  <section class="slide">
+    <h1>Data Table</h1>
+    <div class="slide-body">
+      <table>
+        <thead>
+          <tr>
+            <th>Channel</th>
+            <th>Sessions</th>
+            <th>Conversion</th>
+            <th>Revenue</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Organic Search</td><td>45,200</td><td>3.2%</td><td>$182,000</td></tr>
+          <tr><td>Paid Social</td><td>28,100</td><td>2.8%</td><td>$124,500</td></tr>
+          <tr><td>Email</td><td>12,400</td><td>5.1%</td><td>$98,300</td></tr>
+          <tr><td>Direct</td><td>9,800</td><td>4.4%</td><td>$67,200</td></tr>
+          <tr><td>Referral</td><td>6,300</td><td>3.9%</td><td>$41,800</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SLIDE 7: Bar Chart -->
+  <section class="slide">
+    <h1>Horizontal Bar Chart</h1>
+    <div class="slide-body">
+      <div class="bar-chart">
+        <div class="bar-row">
+          <span class="bar-label">Product A</span>
+          <div class="bar-track"><div class="bar-fill o100" style="width:85%"></div></div>
+          <span class="bar-value">85%</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Product B</span>
+          <div class="bar-track"><div class="bar-fill o90" style="width:72%"></div></div>
+          <span class="bar-value">72%</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Product C</span>
+          <div class="bar-track"><div class="bar-fill o70" style="width:58%"></div></div>
+          <span class="bar-value">58%</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Product D</span>
+          <div class="bar-track"><div class="bar-fill o50" style="width:41%"></div></div>
+          <span class="bar-value">41%</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Product E</span>
+          <div class="bar-track"><div class="bar-fill o30" style="width:23%"></div></div>
+          <span class="bar-value">23%</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 8: Donut Chart (SVG) -->
+  <section class="slide">
+    <h1>Donut Chart</h1>
+    <div class="slide-body">
+      <div class="chart-container">
+        <svg width="200" height="200" viewBox="0 0 42 42">
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="rgba(255,87,34,0.1)" stroke-width="6" />
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="rgba(255,87,34,1)" stroke-width="6"
+            stroke-dasharray="40 60" stroke-dashoffset="25" />
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="rgba(255,87,34,0.7)" stroke-width="6"
+            stroke-dasharray="25 75" stroke-dashoffset="85" />
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="rgba(255,87,34,0.45)" stroke-width="6"
+            stroke-dasharray="20 80" stroke-dashoffset="60" />
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="rgba(255,87,34,0.2)" stroke-width="6"
+            stroke-dasharray="15 85" stroke-dashoffset="40" />
+        </svg>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(255,87,34,1)"></div>Search — 40%</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(255,87,34,0.7)"></div>Social — 25%</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(255,87,34,0.45)"></div>Email — 20%</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(255,87,34,0.2)"></div>Other — 15%</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 9: Callout & Quote -->
+  <section class="slide">
+    <h1>Callout &amp; Blockquote</h1>
+    <div class="slide-body">
+      <div class="callout">
+        <strong>Key Insight:</strong> Use callouts to highlight critical takeaways that the audience should remember after the presentation.
+      </div>
+      <blockquote>
+        "Design is not just what it looks like. Design is how it works."
+      </blockquote>
+      <p style="font-size:var(--font-size-small);opacity:0.5;">— Steve Jobs</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 10: Closing / Thank You -->
+  <section class="slide title-slide">
+    <h1>Thank You</h1>
+    <p class="subtitle">Questions &amp; Discussion</p>
+    <p class="author">team@gather.ai</p>
+  </section>
+
+  <script>
+    class SlidePresentation {
+      constructor() {
+        this.slides = document.querySelectorAll('.slide');
+        this.currentSlide = 0;
+        this.setupIntersectionObserver();
+        this.setupKeyboardNav();
+      }
+
+      setupIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+            }
+          });
+        }, { threshold: 0.3 });
+        this.slides.forEach(slide => observer.observe(slide));
+      }
+
+      setupKeyboardNav() {
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight' || e.key === ' ') {
+            e.preventDefault();
+            this.next();
+          } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            this.prev();
+          }
+        });
+      }
+
+      next() {
+        if (this.currentSlide < this.slides.length - 1) {
+          this.currentSlide++;
+          this.slides[this.currentSlide].scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+
+      prev() {
+        if (this.currentSlide > 0) {
+          this.currentSlide--;
+          this.slides[this.currentSlide].scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    }
+
+    new SlidePresentation();
+  </script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "designSystems": [
+    {
+      "id": "gather",
+      "name": "Gather",
+      "description": "Cream background, Work Sans, orange accent",
+      "cssPath": "gather.css"
+    }
+  ]
+}

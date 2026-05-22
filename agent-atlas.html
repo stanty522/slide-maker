@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phone-Gated Agent Atlas — Gather</title>
+  <link rel="stylesheet" href="gather.css" />
+  <style>
+    .chart-slide { padding: 0; }
+    .chart-slide svg { width: 100%; height: 100%; display: block; }
+    .axis-line { stroke: #000; stroke-width: 1; }
+    .axis-title {
+      font-family: 'Work Sans', sans-serif;
+      font-size: 10px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.12em; fill: #000;
+    }
+    .tick-label { font-family: 'Work Sans', sans-serif; font-size: 9px; fill: #666; }
+    .tick-mark { stroke: #000; stroke-width: 1; }
+    .gridline { stroke: rgba(255,87,34,0.08); stroke-width: 0.5; stroke-dasharray: 2 4; }
+    .quad-divider { stroke: #999; stroke-width: 0.6; stroke-dasharray: 3 5; opacity: 0.5; }
+    .quad-label {
+      font-family: 'Work Sans', sans-serif;
+      font-style: italic; font-weight: 500; fill: #888; font-size: 11px;
+    }
+    .quad-code {
+      font-family: 'Work Sans', sans-serif;
+      font-weight: 700; fill: #888; font-size: 9px; letter-spacing: 0.1em;
+    }
+    .axis-arrow { font-family: 'Work Sans', sans-serif; font-size: 8px; fill: #999; letter-spacing: 0.04em; }
+    .blob { transition: opacity 0.2s ease; }
+    .blob.dim { opacity: 0.15; }
+    .point {
+      cursor: pointer;
+      stroke: #fcf5e2; stroke-width: 1.5;
+      transition: r 0.15s ease, opacity 0.15s;
+    }
+    .point:hover { stroke-width: 2.5; }
+    .point.dim { opacity: 0.2; }
+    .lasso-label {
+      font-family: 'Work Sans', sans-serif;
+      font-size: 9px; font-weight: 700;
+      pointer-events: none; letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .chart-tooltip {
+      position: absolute;
+      background: #000; color: #fcf5e2;
+      padding: 10px 14px;
+      font-family: 'Work Sans', sans-serif;
+      font-size: 11px; line-height: 1.5;
+      border-radius: 4px; pointer-events: none;
+      opacity: 0; transition: opacity 0.15s;
+      z-index: 100; max-width: 260px;
+    }
+    .chart-tooltip strong { font-weight: 700; font-size: 13px; display: block; margin-bottom: 4px; }
+    .chart-tooltip .ptag {
+      display: inline-block; padding: 2px 6px; border-radius: 3px;
+      margin-bottom: 6px; font-size: 10px; font-weight: 600;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .product-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+    .overview-card {
+      background: var(--color-white); border-radius: 8px;
+      padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start;
+    }
+    .overview-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+    .overview-card .count {
+      font-size: 12px; font-weight: 600; color: var(--color-accent); margin-bottom: 4px;
+    }
+    .overview-card p { font-size: 12px; line-height: 1.4; margin: 0; opacity: 0.7; }
+
+    @media print {
+      .chart-slide { padding: 0 !important; }
+      .chart-tooltip { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SLIDE 1: Title -->
+  <section class="slide title-slide">
+    <h1>Phone-Gated<br>Agent Atlas</h1>
+    <p class="subtitle">Information vs. Dollar Outcome</p>
+    <p class="author">40 use cases · 4 product clusters</p>
+  </section>
+
+  <!-- SLIDE 2: Overview -->
+  <section class="slide">
+    <h1>Four Product Clusters</h1>
+    <div class="slide-body">
+      <p>Forty phone and SMS-gated tasks mapped by <span class="accent-bold">information complexity</span> and <span class="accent-bold">dollar outcome</span>.</p>
+      <div class="slide-grid cols-2" style="gap:12px">
+        <div class="overview-card">
+          <div class="product-dot" style="background:rgba(255,87,34,1);margin-top:2px"></div>
+          <div class="card-text">
+            <h3>Concierge</h3>
+            <div class="count">9 tasks · Q1</div>
+            <p>Quick local calls — bookings, orders, hours checks. Habit-forming top of funnel.</p>
+          </div>
+        </div>
+        <div class="overview-card">
+          <div class="product-dot" style="background:rgba(255,87,34,0.7);margin-top:2px"></div>
+          <div class="card-text">
+            <h3>Bill Saver</h3>
+            <div class="count">10 tasks · Q2</div>
+            <p>Low-info, high-dollar retention calls and negotiations. Strongest commercial fit.</p>
+          </div>
+        </div>
+        <div class="overview-card">
+          <div class="product-dot" style="background:rgba(255,87,34,0.45);margin-top:2px"></div>
+          <div class="card-text">
+            <h3>Health Advocate</h3>
+            <div class="count">8 tasks · Q3 + Q4</div>
+            <p>Prior auth and bill negotiation. Document-upload wedge ties both halves together.</p>
+          </div>
+        </div>
+        <div class="overview-card">
+          <div class="product-dot" style="background:rgba(255,87,34,0.25);margin-top:2px"></div>
+          <div class="card-text">
+            <h3>Bureaucracy Fighter</h3>
+            <div class="count">12 tasks · Q3 + Q4</div>
+            <p>Government and financial battles. Hardest acquisition, biggest individual outcomes.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 3: Chart -->
+  <section class="slide chart-slide" style="position:relative">
+    <svg id="chart" viewBox="0 0 960 540" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="chart-tooltip" id="tooltip"></div>
+  </section>
+
+  <!-- SLIDE 4: Q1 & Q2 -->
+  <section class="slide">
+    <h1>Quick Errands &amp; Money Fights</h1>
+    <div class="slide-body">
+      <div class="slide-columns">
+        <div class="col">
+          <div class="card" style="border-left:4px solid var(--color-accent)">
+            <h3>Concierge · Q1</h3>
+            <p>Nine quick local calls cluster in the <span class="accent-bold">cheap-and-simple</span> corner. Highest task frequency, lowest dollar per task, simplest agent capability.</p>
+          </div>
+          <div class="callout" style="margin-top:12px">
+            <strong>Key trait:</strong> Pure Q1. Habit-forming top-of-funnel that builds trust before higher-value interactions.
+          </div>
+        </div>
+        <div class="col">
+          <div class="card" style="border-left:4px solid rgba(255,87,34,0.7)">
+            <h3>Bill Saver · Q2</h3>
+            <p>All ten use cases stack in <span class="accent-bold">low-info, high-dollar</span> territory. Cleanest paid-search market and strongest MVNO-aligned commercial fit.</p>
+          </div>
+          <div class="callout" style="margin-top:12px">
+            <strong>Key trait:</strong> Pure Q2. Cable retention, telco negotiation, fee waivers — recurring savings with clear ROI.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 5: Q3 & Q4 -->
+  <section class="slide">
+    <h1>Mazes &amp; High-Stakes Battles</h1>
+    <div class="slide-body">
+      <div class="slide-columns">
+        <div class="col">
+          <div class="card" style="border-left:4px solid rgba(255,87,34,0.45)">
+            <h3>Health Advocate · Q3 + Q4</h3>
+            <p>Splits between high-info / low-dollar <span class="accent-bold">prior auth</span> work and high-info / high-dollar <span class="accent-bold">bill negotiation</span>.</p>
+          </div>
+          <div class="callout" style="margin-top:12px">
+            <strong>Key trait:</strong> Crosses Q3→Q4. Unified by healthcare document complexity and insurance navigation.
+          </div>
+        </div>
+        <div class="col">
+          <div class="card" style="border-left:4px solid rgba(255,87,34,0.25)">
+            <h3>Bureaucracy Fighter · Q3 + Q4</h3>
+            <p>Owns the <span class="accent-bold">right half</span> of the chart. Government work down low, big financial battles up top.</p>
+          </div>
+          <div class="callout" style="margin-top:12px">
+            <strong>Key trait:</strong> Hardest acquisition, biggest individual outcomes — $5K to $500K range.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+  const PRODUCTS = {
+    concierge:   { color: 'rgba(255,87,34,1)',    soft: 'rgba(255,87,34,0.12)', label: 'Concierge' },
+    billsaver:   { color: 'rgba(255,87,34,0.7)',  soft: 'rgba(255,87,34,0.08)', label: 'Bill Saver' },
+    health:      { color: 'rgba(255,87,34,0.45)', soft: 'rgba(255,87,34,0.06)', label: 'Health Advocate' },
+    bureaucracy: { color: 'rgba(255,87,34,0.25)', soft: 'rgba(255,87,34,0.04)', label: 'Bureaucracy Fighter' }
+  };
+
+  const data = [
+    {product:'concierge',name:'Restaurant booking',info:2,dollar:5,quad:'Q1',range:'$0'},
+    {product:'concierge',name:'Hair salon booking',info:2,dollar:49,quad:'Q1',range:'$30–80'},
+    {product:'concierge',name:'Pet groomer / vet booking',info:2,dollar:71,quad:'Q1',range:'$50–100'},
+    {product:'concierge',name:"Doctor's appointment",info:2,dollar:40,quad:'Q1',range:'$20–80'},
+    {product:'concierge',name:'Local takeout order',info:3,dollar:35,quad:'Q1',range:'$25–50'},
+    {product:'concierge',name:'DMV / passport appt',info:2,dollar:87,quad:'Q1',range:'$50–150'},
+    {product:'concierge',name:'Pharmacy refill flow',info:2,dollar:20,quad:'Q1',range:'$10–40'},
+    {product:'concierge',name:'Delivery SMS reschedule',info:3,dollar:63,quad:'Q1',range:'$20–200'},
+    {product:'concierge',name:'Inventory / hours check',info:1,dollar:5,quad:'Q1',range:'$0'},
+    {product:'billsaver',name:'Cable retention',info:3,dollar:775,quad:'Q2',range:'$400–1.5K/yr'},
+    {product:'billsaver',name:'Telco plan negotiation',info:3,dollar:671,quad:'Q2',range:'$300–1.5K/yr'},
+    {product:'billsaver',name:'Credit card APR waiver',info:3,dollar:548,quad:'Q2',range:'$200–1.5K'},
+    {product:'billsaver',name:'SiriusXM cancellation',info:2,dollar:490,quad:'Q2',range:'$300–800/yr'},
+    {product:'billsaver',name:'ADT / alarm cancel',info:2,dollar:424,quad:'Q2',range:'$300–600/yr'},
+    {product:'billsaver',name:'Bank fraud alert',info:2,dollar:500,quad:'Q2',range:'$50–5K/txn'},
+    {product:'billsaver',name:'Card step-up confirm',info:2,dollar:2236,quad:'Q2',range:'$500–10K/txn'},
+    {product:'billsaver',name:'Airline rebooking',info:3,dollar:632,quad:'Q2',range:'$200–2K'},
+    {product:'billsaver',name:'Hotel rate match',info:2,dollar:224,quad:'Q2',range:'$100–500'},
+    {product:'billsaver',name:'New account 2FA gauntlet',info:3,dollar:7071,quad:'Q2',range:'$1K–50K'},
+    {product:'health',name:'Medical bill negotiation',info:9,dollar:14142,quad:'Q4',range:'$2K–100K'},
+    {product:'health',name:'Insurance claim appeals',info:9,dollar:15492,quad:'Q4',range:'$3K–80K'},
+    {product:'health',name:'Prior auth push (3-way)',info:8,dollar:63,quad:'Q3',range:'$20–200'},
+    {product:'health',name:'Rx transfer w/ prior auth',info:7,dollar:45,quad:'Q3',range:'$20–100'},
+    {product:'health',name:'EOB analysis / pre-bill',info:8,dollar:3162,quad:'Q4',range:'$500–20K'},
+    {product:'health',name:'Specialist appt + insurance',info:7,dollar:40,quad:'Q3',range:'$20–80'},
+    {product:'health',name:'Patient portal pw reset',info:6,dollar:5,quad:'Q3',range:'gates care'},
+    {product:'health',name:'Healthcare merchant dispute',info:6,dollar:122,quad:'Q3',range:'$50–300'},
+    {product:'bureaucracy',name:'IRS notice (CP2000)',info:8,dollar:224,quad:'Q3',range:'$100–500'},
+    {product:'bureaucracy',name:'State DMV exceptions',info:7,dollar:122,quad:'Q3',range:'$50–300'},
+    {product:'bureaucracy',name:'Unemployment claim',info:8,dollar:424,quad:'Q3',range:'$300–600/wk'},
+    {product:'bureaucracy',name:'VA benefits navigation',info:8,dollar:158,quad:'Q3',range:'$0–500'},
+    {product:'bureaucracy',name:'Property tax appeal',info:8,dollar:2236,quad:'Q4',range:'$500–10K/yr'},
+    {product:'bureaucracy',name:'Student loan (IDR/PSLF)',info:9,dollar:22360,quad:'Q4',range:'$5K–100K+'},
+    {product:'bureaucracy',name:'Elder care + Medicaid',info:10,dollar:7746,quad:'Q4',range:'$5K–12K/mo'},
+    {product:'bureaucracy',name:'Auto total-loss dispute',info:8,dollar:8660,quad:'Q4',range:'$3K–25K'},
+    {product:'bureaucracy',name:'Collections pay-for-delete',info:8,dollar:6325,quad:'Q4',range:'$1K–40K'},
+    {product:'bureaucracy',name:'HOA dispute',info:9,dollar:10000,quad:'Q4',range:'$2K–50K'},
+    {product:'bureaucracy',name:'Mortgage refi shopping',info:9,dollar:47434,quad:'Q4',range:'$15K–150K'},
+    {product:'bureaucracy',name:'New mortgage / HELOC',info:9,dollar:158114,quad:'Q4',range:'$50K–500K'}
+  ];
+
+  const W = 960, H = 540;
+  const PAD = { left: 70, right: 40, top: 30, bottom: 75 };
+  const plotW = W - PAD.left - PAD.right;
+  const plotH = H - PAD.top - PAD.bottom;
+  const plotX0 = PAD.left, plotY0 = PAD.top;
+  const plotX1 = PAD.left + plotW, plotY1 = PAD.top + plotH;
+
+  const MIN_LOG = Math.log10(4), MAX_LOG = Math.log10(500000);
+  const LOG_RANGE = MAX_LOG - MIN_LOG;
+
+  const xScale = (info) => plotX0 + (info / 10) * plotW;
+  const yScale = (d) => {
+    const dc = Math.max(d, 4);
+    return plotY1 - ((Math.log10(dc) - MIN_LOG) / LOG_RANGE) * plotH;
+  };
+
+  const X_DIV = xScale(5);
+  const Y_DIV = yScale(300);
+
+  function convexHull(points) {
+    const pts = points.slice().sort((a,b) => a.x - b.x || a.y - b.y);
+    if (pts.length < 3) return pts;
+    const cross = (o,a,b) => (a.x-o.x)*(b.y-o.y) - (a.y-o.y)*(b.x-o.x);
+    const lower = [];
+    for (const p of pts) {
+      while (lower.length >= 2 && cross(lower[lower.length-2], lower[lower.length-1], p) <= 0) lower.pop();
+      lower.push(p);
+    }
+    const upper = [];
+    for (let i = pts.length-1; i >= 0; i--) {
+      const p = pts[i];
+      while (upper.length >= 2 && cross(upper[upper.length-2], upper[upper.length-1], p) <= 0) upper.pop();
+      upper.push(p);
+    }
+    lower.pop(); upper.pop();
+    return lower.concat(upper);
+  }
+
+  function lassoPath(points, radius, samples) {
+    radius = radius || 28; samples = samples || 14;
+    const inflated = [];
+    for (const p of points) {
+      for (let i = 0; i < samples; i++) {
+        const a = (i / samples) * Math.PI * 2;
+        inflated.push({ x: p.x + Math.cos(a) * radius, y: p.y + Math.sin(a) * radius });
+      }
+    }
+    const hull = convexHull(inflated);
+    return catmullRom(hull, true);
+  }
+
+  function catmullRom(points, closed) {
+    if (points.length < 2) return '';
+    const n = points.length;
+    let path = 'M ' + points[0].x.toFixed(1) + ' ' + points[0].y.toFixed(1) + ' ';
+    for (let i = 0; i < n; i++) {
+      if (!closed && i === n - 1) break;
+      const p0 = points[(i-1+n)%n], p1 = points[i], p2 = points[(i+1)%n], p3 = points[(i+2)%n];
+      const cp1x = p1.x + (p2.x - p0.x) / 6, cp1y = p1.y + (p2.y - p0.y) / 6;
+      const cp2x = p2.x - (p3.x - p1.x) / 6, cp2y = p2.y - (p3.y - p1.y) / 6;
+      path += 'C ' + cp1x.toFixed(1) + ' ' + cp1y.toFixed(1) + ',' +
+              cp2x.toFixed(1) + ' ' + cp2y.toFixed(1) + ',' +
+              p2.x.toFixed(1) + ' ' + p2.y.toFixed(1) + ' ';
+    }
+    if (closed) path += 'Z';
+    return path;
+  }
+
+  const svg = document.getElementById('chart');
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (tag, attrs) => {
+    const e = document.createElementNS(NS, tag);
+    for (const [k,v] of Object.entries(attrs || {})) if (v != null) e.setAttribute(k, v);
+    return e;
+  };
+
+  // Cream background fill for the chart area
+  svg.appendChild(el('rect', { x:0, y:0, width:W, height:H, fill:'#fcf5e2' }));
+
+  // Quadrant tints
+  [
+    { x:plotX0, y:Y_DIV, w:X_DIV-plotX0, h:plotY1-Y_DIV },
+    { x:plotX0, y:plotY0, w:X_DIV-plotX0, h:Y_DIV-plotY0 },
+    { x:X_DIV, y:Y_DIV, w:plotX1-X_DIV, h:plotY1-Y_DIV },
+    { x:X_DIV, y:plotY0, w:plotX1-X_DIV, h:Y_DIV-plotY0 }
+  ].forEach(q => svg.appendChild(el('rect', { x:q.x, y:q.y, width:q.w, height:q.h, fill:'rgba(255,87,34,0.02)' })));
+
+  // Gridlines
+  [10,100,1000,10000,100000].forEach(d => {
+    const y = yScale(d);
+    if (y > plotY0+2 && y < plotY1-2)
+      svg.appendChild(el('line', { class:'gridline', x1:plotX0, y1:y, x2:plotX1, y2:y }));
+  });
+  [1,2,3,4,5,6,7,8,9,10].forEach(i => {
+    svg.appendChild(el('line', { class:'gridline', x1:xScale(i), y1:plotY0, x2:xScale(i), y2:plotY1 }));
+  });
+
+  // Quadrant dividers
+  svg.appendChild(el('line', { class:'quad-divider', x1:X_DIV, y1:plotY0, x2:X_DIV, y2:plotY1 }));
+  svg.appendChild(el('line', { class:'quad-divider', x1:plotX0, y1:Y_DIV, x2:plotX1, y2:Y_DIV }));
+
+  // Quadrant labels
+  [
+    { code:'Q1', text:'Quick errands',       x:X_DIV-8,  y:plotY1-8,  anchor:'end' },
+    { code:'Q2', text:'Money fights',        x:X_DIV-8,  y:plotY0+18, anchor:'end' },
+    { code:'Q3', text:'Bureaucratic mazes',  x:plotX1-8,  y:plotY1-8,  anchor:'end' },
+    { code:'Q4', text:'High-stakes battles', x:plotX1-8,  y:plotY0+18, anchor:'end' }
+  ].forEach(ql => {
+    const c = el('text', { class:'quad-code', x:ql.x, y:ql.y-14, 'text-anchor':ql.anchor });
+    c.textContent = ql.code; svg.appendChild(c);
+    const t = el('text', { class:'quad-label', x:ql.x, y:ql.y, 'text-anchor':ql.anchor });
+    t.textContent = ql.text; svg.appendChild(t);
+  });
+
+  // Axes
+  svg.appendChild(el('line', { class:'axis-line', x1:plotX0, y1:plotY0, x2:plotX0, y2:plotY1 }));
+  svg.appendChild(el('line', { class:'axis-line', x1:plotX0, y1:plotY1, x2:plotX1, y2:plotY1 }));
+
+  // Y ticks
+  const yLabels = {10:'$10',100:'$100',1000:'$1K',10000:'$10K',100000:'$100K'};
+  [10,100,1000,10000,100000].forEach(d => {
+    const y = yScale(d);
+    if (y < plotY0 || y > plotY1) return;
+    svg.appendChild(el('line', { class:'tick-mark', x1:plotX0-4, y1:y, x2:plotX0, y2:y }));
+    const t = el('text', { class:'tick-label', x:plotX0-8, y:y+3, 'text-anchor':'end' });
+    t.textContent = yLabels[d]; svg.appendChild(t);
+  });
+
+  // X ticks
+  [1,2,3,4,5,6,7,8,9,10].forEach(i => {
+    const x = xScale(i);
+    svg.appendChild(el('line', { class:'tick-mark', x1:x, y1:plotY1, x2:x, y2:plotY1+4 }));
+    const t = el('text', { class:'tick-label', x:x, y:plotY1+15, 'text-anchor':'middle' });
+    t.textContent = i; svg.appendChild(t);
+  });
+
+  // Axis titles
+  const xt = el('text', { class:'axis-title', x:plotX0+plotW/2, y:plotY1+38, 'text-anchor':'middle' });
+  xt.textContent = 'Information Requirement (1–10)'; svg.appendChild(xt);
+  const al = el('text', { class:'axis-arrow', x:plotX0, y:plotY1+52, 'text-anchor':'start' });
+  al.textContent = '◀ simple'; svg.appendChild(al);
+  const ar = el('text', { class:'axis-arrow', x:plotX1, y:plotY1+52, 'text-anchor':'end' });
+  ar.textContent = 'complex ▶'; svg.appendChild(ar);
+  const yt = el('text', { class:'axis-title', x:-(plotY0+plotH/2), y:20, transform:'rotate(-90)', 'text-anchor':'middle' });
+  yt.textContent = 'Dollar Outcome (log)'; svg.appendChild(yt);
+
+  // Project points
+  const projected = data.map(d => ({ ...d, x: xScale(d.info), y: yScale(d.dollar) }));
+
+  // Lassos
+  const productOrder = ['bureaucracy','health','billsaver','concierge'];
+  const blobs = {};
+  for (const key of productOrder) {
+    const pts = projected.filter(d => d.product === key);
+    if (pts.length < 2) continue;
+    const path = lassoPath(pts, 28, 14);
+    const blob = el('path', {
+      d: path, class:'blob', 'data-product': key,
+      fill: PRODUCTS[key].soft, stroke: PRODUCTS[key].color,
+      'stroke-width': 1.5, 'stroke-linejoin':'round', 'stroke-opacity': 0.8
+    });
+    svg.appendChild(blob);
+    blobs[key] = blob;
+
+    // Lasso label at centroid
+    const cx = pts.reduce((s,p) => s+p.x, 0) / pts.length;
+    const cy = pts.reduce((s,p) => s+p.y, 0) / pts.length;
+    const lbl = el('text', { class:'lasso-label', x:cx, y:cy-18, 'text-anchor':'middle', fill:PRODUCTS[key].color });
+    lbl.textContent = PRODUCTS[key].label;
+    svg.appendChild(lbl);
+  }
+
+  // Points
+  const tooltip = document.getElementById('tooltip');
+  const chartWrap = document.querySelector('.chart-slide');
+  const allPoints = [];
+
+  for (const d of projected) {
+    const c = PRODUCTS[d.product].color;
+    const p = el('circle', { class:'point', cx:d.x, cy:d.y, r:5, fill:c, 'data-product':d.product });
+    allPoints.push(p);
+
+    p.addEventListener('mouseenter', () => {
+      p.setAttribute('r', 7);
+      allPoints.forEach(op => { if (op.getAttribute('data-product') !== d.product) op.classList.add('dim'); });
+      Object.entries(blobs).forEach(([k,b]) => { if (k !== d.product) b.classList.add('dim'); });
+      tooltip.innerHTML = '<span class="ptag" style="background:' + c + ';color:#FFF">' +
+        PRODUCTS[d.product].label + ' · ' + d.quad + '</span><strong>' + d.name +
+        '</strong>Info ' + d.info + ' · ' + d.range;
+      tooltip.style.opacity = 1;
+    });
+
+    p.addEventListener('mousemove', (ev) => {
+      const r = chartWrap.getBoundingClientRect();
+      let tx = ev.clientX - r.left + 12, ty = ev.clientY - r.top + 12;
+      const tr = tooltip.getBoundingClientRect();
+      if (tx + tr.width > r.width - 8) tx = ev.clientX - r.left - tr.width - 12;
+      if (ty + tr.height > r.height - 8) ty = ev.clientY - r.top - tr.height - 12;
+      tooltip.style.left = tx + 'px'; tooltip.style.top = ty + 'px';
+    });
+
+    p.addEventListener('mouseleave', () => {
+      p.setAttribute('r', 5);
+      allPoints.forEach(op => op.classList.remove('dim'));
+      Object.values(blobs).forEach(b => b.classList.remove('dim'));
+      tooltip.style.opacity = 0;
+    });
+
+    svg.appendChild(p);
+  }
+
+  // Slide navigation
+  class SlidePresentation {
+    constructor() {
+      this.slides = document.querySelectorAll('.slide');
+      this.current = 0;
+      this.setupObserver();
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); this.go(1); }
+        else if (e.key === 'ArrowLeft') { e.preventDefault(); this.go(-1); }
+      });
+    }
+    setupObserver() {
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+      }, { threshold: 0.3 });
+      this.slides.forEach(s => obs.observe(s));
+    }
+    go(dir) {
+      this.current = Math.max(0, Math.min(this.slides.length-1, this.current+dir));
+      this.slides[this.current].scrollIntoView({ behavior:'smooth' });
+    }
+  }
+  new SlidePresentation();
+  </script>
+</body>
+</html>
