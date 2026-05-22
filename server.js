@@ -133,47 +133,9 @@ Full-bleed chart (no padding):
   <svg viewBox="0 0 960 540" ...><!-- chart content --></svg>
 </section>`;
 
-app.post('/api/convert', async (req, res) => {
-  const { html, designSystem, apiKey } = req.body;
-
-  if (!html) {
-    return res.status(400).json({ error: 'No HTML provided' });
-  }
-
-  const key = apiKey || process.env.ANTHROPIC_API_KEY;
-  if (!key) {
-    return res.status(400).json({ error: 'No API key. Set ANTHROPIC_API_KEY or enter one in Settings.' });
-  }
-
-  let cssContent;
-  try {
-    const cssPath = designSystem === 'gather' ? 'gather.css' : 'gather.css';
-    cssContent = fs.readFileSync(path.join(__dirname, cssPath), 'utf-8');
-  } catch {
-    return res.status(500).json({ error: 'Could not read design system CSS' });
-  }
-
-  const client = new Anthropic({ apiKey: key });
-
-  try {
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 16000,
-      system: SYSTEM_PROMPT,
-      messages: [
-        {
-          role: 'user',
-          content: `Convert this HTML page into Gather-styled presentation slides:\n\n${html}`
-        }
-      ]
-    });
-
-    const slideHtml = message.content
-      .filter(b => b.type === 'text')
-      .map(b => b.text)
-      .join('');
-
-    const fullHtml = `<!DOCTYPE html>
+function wrapSlideHtml(slideHtml, cssContent, preview) {
+  if (preview) {
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -192,8 +154,9 @@ document.querySelectorAll('.slide').forEach(s => s.classList.add('visible'));
 <\/script>
 </body>
 </html>`;
+  }
 
-    const downloadHtml = `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -229,11 +192,76 @@ new SlidePresentation();
 <\/script>
 </body>
 </html>`;
+}
 
-    res.json({ html: fullHtml, downloadHtml });
+app.post('/api/convert', async (req, res) => {
+  const { html, designSystem, apiKey } = req.body;
+
+  if (!html) {
+    return res.status(400).json({ error: 'No HTML provided' });
+  }
+
+  const key = apiKey || process.env.ANTHROPIC_API_KEY;
+  if (!key) {
+    return res.status(400).json({ error: 'No API key. Set ANTHROPIC_API_KEY or enter one in Settings.' });
+  }
+
+  let cssContent;
+  try {
+    const cssPath = designSystem === 'gather' ? 'gather.css' : 'gather.css';
+    cssContent = fs.readFileSync(path.join(__dirname, cssPath), 'utf-8');
+  } catch {
+    return res.status(500).json({ error: 'Could not read design system CSS' });
+  }
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  const send = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
+
+  const client = new Anthropic({ apiKey: key });
+
+  try {
+    send({ type: 'status', message: 'Analyzing content...' });
+
+    const stream = client.messages.stream({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 16000,
+      system: SYSTEM_PROMPT,
+      messages: [
+        { role: 'user', content: `Convert this HTML page into Gather-styled presentation slides:\n\n${html}` }
+      ]
+    });
+
+    let fullText = '';
+    let lastSlideCount = 0;
+
+    stream.on('text', (text) => {
+      fullText += text;
+      const slideCount = (fullText.match(/<section[^>]*class="[^"]*slide/g) || []).length;
+
+      if (slideCount > lastSlideCount) {
+        lastSlideCount = slideCount;
+        send({ type: 'slide', count: slideCount });
+      }
+
+      send({ type: 'chunk', length: fullText.length });
+    });
+
+    await stream.finalMessage();
+
+    send({ type: 'status', message: 'Rendering preview...' });
+
+    const previewHtml = wrapSlideHtml(fullText, cssContent, true);
+    const downloadHtml = wrapSlideHtml(fullText, cssContent, false);
+
+    send({ type: 'done', html: previewHtml, downloadHtml });
+    res.end();
   } catch (err) {
-    const msg = err.message || 'Claude API call failed';
-    res.status(500).json({ error: msg });
+    send({ type: 'error', message: err.message || 'Claude API call failed' });
+    res.end();
   }
 });
 

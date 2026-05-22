@@ -13,12 +13,18 @@ const iframe = $('#preview-frame');
 const emptyState = $('#empty-state');
 const container = $('#preview-container');
 const apiKeyInput = $('#api-key');
+const progressPanel = $('#progress-panel');
+const progressStatus = $('#progress-status');
+const progressSlides = $('#progress-slides');
+const progressTime = $('#progress-time');
+const progressBar = $('#progress-bar');
 
 let designSystems = [];
 let convertedHtml = '';
 let downloadHtml = '';
 let currentSlide = 0;
 let totalSlides = 0;
+let timerInterval = null;
 
 apiKeyInput.value = localStorage.getItem('slide-maker-api-key') || '';
 apiKeyInput.addEventListener('change', () => {
@@ -49,7 +55,9 @@ fileInput.addEventListener('change', () => {
   reader.readAsText(file);
 });
 
-convertBtn.addEventListener('click', async () => {
+convertBtn.addEventListener('click', () => runConversion());
+
+async function runConversion() {
   const input = textarea.value.trim();
   if (!input) return;
 
@@ -57,9 +65,10 @@ convertBtn.addEventListener('click', async () => {
   convertBtn.textContent = 'Converting...';
   convertBtn.classList.add('loading');
   clearError();
+  showProgress();
 
   try {
-    const res = await fetch('/api/convert', {
+    const response = await fetch('/api/convert', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -69,24 +78,96 @@ convertBtn.addEventListener('click', async () => {
       })
     });
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      showError(data.error || 'Conversion failed');
+    if (!response.ok && response.headers.get('content-type')?.includes('application/json')) {
+      const err = await response.json();
+      hideProgress();
+      showError(err.error || 'Conversion failed');
       return;
     }
 
-    convertedHtml = data.html;
-    downloadHtml = data.downloadHtml;
-    showPreview(convertedHtml);
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        try {
+          const data = JSON.parse(line.slice(6));
+          handleStreamEvent(data);
+        } catch {}
+      }
+    }
   } catch (e) {
+    hideProgress();
     showError('Could not reach server. Is it running?');
   } finally {
     convertBtn.disabled = false;
     convertBtn.textContent = 'Convert to Slides';
     convertBtn.classList.remove('loading');
   }
-});
+}
+
+function handleStreamEvent(data) {
+  switch (data.type) {
+    case 'status':
+      progressStatus.textContent = data.message;
+      break;
+
+    case 'slide':
+      progressSlides.textContent = data.count + (data.count === 1 ? ' slide' : ' slides');
+      progressBar.style.width = Math.min(data.count * 14, 90) + '%';
+      break;
+
+    case 'chunk':
+      break;
+
+    case 'done':
+      progressBar.style.width = '100%';
+      progressStatus.textContent = 'Done';
+      convertedHtml = data.html;
+      downloadHtml = data.downloadHtml;
+      setTimeout(() => {
+        hideProgress();
+        showPreview(convertedHtml);
+      }, 400);
+      break;
+
+    case 'error':
+      hideProgress();
+      showError(data.message);
+      break;
+  }
+}
+
+function showProgress() {
+  emptyState.style.display = 'none';
+  iframe.classList.remove('visible');
+  progressPanel.classList.add('visible');
+  progressStatus.textContent = 'Analyzing content...';
+  progressSlides.textContent = '0 slides';
+  progressBar.style.width = '5%';
+
+  let elapsed = 0;
+  progressTime.textContent = '0s';
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    elapsed++;
+    progressTime.textContent = elapsed + 's';
+  }, 1000);
+}
+
+function hideProgress() {
+  progressPanel.classList.remove('visible');
+  clearInterval(timerInterval);
+}
 
 downloadBtn.addEventListener('click', () => {
   const html = downloadHtml || convertedHtml;

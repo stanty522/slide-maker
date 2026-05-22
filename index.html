@@ -50,6 +50,18 @@
           <div class="empty-state" id="empty-state">
             <p>Paste HTML and click <strong>Convert to Slides</strong></p>
           </div>
+          <div class="progress-panel" id="progress-panel">
+            <div class="spinner"></div>
+            <div class="progress-status" id="progress-status">Analyzing content...</div>
+            <div class="progress-meta">
+              <span id="progress-slides">0 slides</span>
+              <span class="progress-dot"></span>
+              <span id="progress-time">0s</span>
+            </div>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" id="progress-bar"></div>
+            </div>
+          </div>
           <iframe id="preview-frame" sandbox="allow-same-origin allow-scripts"></iframe>
         </div>
       </section>
