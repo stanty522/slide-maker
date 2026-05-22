@@ -15,6 +15,19 @@
   --color-accent-05: rgba(255, 87, 34, 0.05);
   --color-white: #ffffff;
 
+  --chart-1: #ff5722;
+  --chart-2: #e8963e;
+  --chart-3: #c74b3a;
+  --chart-4: #5c8a4a;
+  --chart-5: #3a7a6e;
+  --chart-6: #8b6543;
+  --chart-1-soft: rgba(255, 87, 34, 0.12);
+  --chart-2-soft: rgba(232, 150, 62, 0.12);
+  --chart-3-soft: rgba(199, 75, 58, 0.12);
+  --chart-4-soft: rgba(92, 138, 74, 0.12);
+  --chart-5-soft: rgba(58, 122, 110, 0.12);
+  --chart-6-soft: rgba(139, 101, 67, 0.12);
+
   --slide-w: 960px;
   --slide-h: 540px;
   --slide-pad: 48px;
@@ -349,6 +362,13 @@ html, body {
 .bar-fill.o50  { background: var(--color-accent-50); }
 .bar-fill.o30  { background: var(--color-accent-30); }
 .bar-fill.o20  { background: var(--color-accent-20); }
+
+.bar-fill.c1 { background: var(--chart-1); }
+.bar-fill.c2 { background: var(--chart-2); }
+.bar-fill.c3 { background: var(--chart-3); }
+.bar-fill.c4 { background: var(--chart-4); }
+.bar-fill.c5 { background: var(--chart-5); }
+.bar-fill.c6 { background: var(--chart-6); }
 
 .bar-value {
   width: 48px;

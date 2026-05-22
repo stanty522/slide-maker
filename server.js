@@ -24,9 +24,17 @@ Do NOT include \`\`\`html fences, <!DOCTYPE>, <html>, <head>, <body>, or <style>
 - Background: #fcf5e2 (cream)
 - Text color: #000000 (black)
 - Accent color: #ff5722 (orange) — use for emphasis, can combine with bold
-- Charts and tables use orange at varying opacities:
+- For single-series charts, use orange at varying opacities:
   CSS vars: --color-accent (100%), --color-accent-90, --color-accent-70, --color-accent-50, --color-accent-30, --color-accent-20, --color-accent-10, --color-accent-05
-  Raw: rgba(255,87,34,1), rgba(255,87,34,0.7), rgba(255,87,34,0.45), rgba(255,87,34,0.25), etc.
+- For multi-category charts (scatter plots, pie charts, grouped bars), use the 6 chart colors:
+  --chart-1: #ff5722 (orange)        --chart-1-soft: rgba(255,87,34,0.12)
+  --chart-2: #e8963e (amber)         --chart-2-soft: rgba(232,150,62,0.12)
+  --chart-3: #c74b3a (terracotta)    --chart-3-soft: rgba(199,75,58,0.12)
+  --chart-4: #5c8a4a (sage)          --chart-4-soft: rgba(92,138,74,0.12)
+  --chart-5: #3a7a6e (teal)          --chart-5-soft: rgba(58,122,110,0.12)
+  --chart-6: #8b6543 (sienna)        --chart-6-soft: rgba(139,101,67,0.12)
+- Use the solid color for points/strokes and the soft variant for fills/lasso backgrounds
+- These are warm, earthy tones designed to be distinguishable on the cream background
 
 ## Available CSS Classes
 
@@ -62,17 +70,19 @@ Tables:
 
 Bar charts:
   .bar-chart > .bar-row > (.bar-label + .bar-track > .bar-fill.oXX + .bar-value)
-  Fill opacity classes: .o100 .o90 .o70 .o50 .o30 .o20
+  Single-series fill classes: .o100 .o90 .o70 .o50 .o30 .o20
+  Multi-category fill classes: .c1 .c2 .c3 .c4 .c5 .c6
 
-SVG donut/pie:
-  Use circle stroke-dasharray technique with orange rgba values
+SVG donut/pie/scatter:
+  Use the 6 chart colors for distinct categories (var(--chart-1) through var(--chart-6))
+  Use circle stroke-dasharray technique for donut/pie
   Wrap in .chart-container with .chart-legend > .legend-item > .legend-dot
 
 ## Conversion Guidelines
 1. Start with a title slide extracted from the page's main heading or <title>
 2. Analyze ALL content — text, data, charts, tables, notes, legends
-3. For JS-generated visualizations: extract the DATA from the script, rebuild as static SVG or HTML bar charts using Gather's orange palette
-4. Map multi-color schemes to orange opacity variations (darkest = most important)
+3. For JS-generated visualizations: extract the DATA from the script, rebuild as static SVG or HTML bar charts using Gather's chart palette
+4. Map multi-color schemes to the 6 chart colors (--chart-1 through --chart-6) — each category gets its own distinct color
 5. For groups of items, use cards in a grid layout
 6. For key numbers, use stat-cards
 7. For important insights, use callouts with <strong> labels
